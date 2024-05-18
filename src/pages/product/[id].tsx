@@ -1,37 +1,36 @@
-import { stripe } from "@/src/services/stripe";
-import { ImageContainer, ProductContainer, ProductDetails } from "@/src/styles/pages/product";
+import { ImageContainer, ProductContainer, ProductDetails } from "@/styles/pages/product";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { useShoppingCart } from 'use-shopping-cart'
 import Stripe from "stripe";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { stripe } from "@/services/stripe";
+import { ShopCartContext } from "@/context/shopCartCOntext";
 
 interface ProductProps {
   product: {
-    id: string
-    name: string
-    imageUrl: string
-    price: string
-    description: string
-    defaultPriceId: string
-    sku: string
+    id: string;
+    name: string;
+    imageUrl: string;
+    price: string;
+    description: string;
+    defaultPriceId: string;
   }
 }
 
 export default function Product({ product }: ProductProps) {
-  const { addItem, cartDetails } = useShoppingCart()
-  const [isCreatingCheckout, setIsCreatingCheckout] = useState(false)
+  const { addItem, checkItemExists } = useContext(ShopCartContext);
+  const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
 
-  const itemInCart = cartDetails.hasOwnProperty(product.id)
+  const itemInCart = checkItemExists(product.id);
 
   async function handleBuyProduct() {
     try {
-      setIsCreatingCheckout(true)
-      await addItem(product)
+      setIsCreatingCheckout(true);
+      await addItem(product);
     } catch (error) {
-      setIsCreatingCheckout(false)
-      alert(`Failed to add item to cart`)
+      setIsCreatingCheckout(false);
+      alert('Failed to add item to cart');
     }
   }
   
@@ -41,29 +40,30 @@ export default function Product({ product }: ProductProps) {
         <title>{product.name} | Ignite Shop</title>
       </Head>
     
-   <ProductContainer>
-    <ImageContainer>
-      <Image src={product.imageUrl} width={520} height={480} alt="" />
-    </ImageContainer>
-    <ProductDetails>
-      <h1>{product.name}</h1>
-      <span>{product.price}</span>
-      <p>{product.description}</p>
-      <button 
-      disabled={itemInCart} 
-      onClick={handleBuyProduct}>
-        {itemInCart ? 'Product is already in the cart' : 'Add to Cart'}
-      </button>
-    </ProductDetails>
-   </ProductContainer>
-   </>
+      <ProductContainer>
+        <ImageContainer>
+          <Image src={product.imageUrl} width={520} height={480} alt="" />
+        </ImageContainer>
+        <ProductDetails>
+          <h1>{product.name}</h1>
+          <span>{product.price}</span>
+          <p>{product.description}</p>
+          <button 
+            disabled={itemInCart || isCreatingCheckout} 
+            onClick={handleBuyProduct}
+          >
+            {itemInCart ? 'Product is already in the cart' : 'Add to Cart'}
+          </button>
+        </ProductDetails>
+      </ProductContainer>
+    </>
   )
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
   return {
     paths: [
-      { params: { id: 'prod_Q2xsa22JHGWyCD'}}
+      { params: { id: 'prod_Q2xsa22JHGWyCD' }}
     ],
     fallback: 'blocking',
   };
@@ -76,7 +76,7 @@ export const getStaticProps: GetStaticProps<ProductProps> = async ({ params }) =
   });
   
   const price = product.default_price as Stripe.Price;
-  const sku = product.metadata?.sku ?? null;
+  
   return {
     props: {
       product: {
@@ -84,13 +84,12 @@ export const getStaticProps: GetStaticProps<ProductProps> = async ({ params }) =
         name: product.name,
         imageUrl: product.images[0],
         price: new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-      }).format((price.unit_amount || 0) / 100),
-      description: product.description,
-      defaultPriceId: price.id,
-      sku: sku
-    }
+          style: 'currency',
+          currency: 'BRL'
+        }).format((price.unit_amount || 0) / 100),
+        description: product.description,
+        defaultPriceId: price.id,
+      }
     },
     revalidate: 60 * 60 * 1 // 1 hour
   };
