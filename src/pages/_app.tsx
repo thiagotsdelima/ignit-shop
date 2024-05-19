@@ -10,6 +10,7 @@ import Image from "next/image";
 
 globalStyles()
 
+
 export default function App({ Component, pageProps }: AppProps) {
 
   return (
