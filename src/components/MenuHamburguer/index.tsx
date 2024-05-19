@@ -2,7 +2,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { forwardRef, useContext } from 'react';
 import { MenuContent } from '../MenuContent';
 import { BagButton } from '../BagButton';
-import { ShopCartContext } from '@/context/shopCartCOntext';
+import { ShopCartContext } from "@/context/shopCartContext";
 
 
 interface MenuHamburguerProps {

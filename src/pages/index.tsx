@@ -8,8 +8,8 @@ import 'keen-slider/keen-slider.min.css';
 import Stripe from "stripe";
 import Link from "next/link";
 import Head from "next/head";
-import { useContext, useState } from "react";
-import { ShopCartContext } from "@/context/shopCartCOntext";
+import { useContext } from "react";
+import { ShopCartContext } from "@/context/shopCartContext";
 
 
 interface ProductsProps {
@@ -48,7 +48,7 @@ export default function Home({ products }: HomeProps) {
       {products && products.map(product => (
           <Link key={product.id} href={`/product/${product.id}`} prefetch={false}>
             <Product className="keen-slider__slide">
-              <Image src={product.imageUrl} width={520} height={480} alt="" />
+              <Image src={product.imageUrl} width={520} height={480} alt="" priority  />
               <footer>
                 <div>
                   <strong>{product.name}</strong>

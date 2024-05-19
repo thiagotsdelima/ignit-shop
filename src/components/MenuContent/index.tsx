@@ -1,11 +1,10 @@
-
 import { useContext, useState, useEffect } from 'react';
 import { X } from 'phosphor-react';
 import * as Dialog from '@radix-ui/react-dialog';
 import Image from 'next/image';
 import axios from 'axios';
 import { ItmsContent, Product, ProductImage, ProductDetails, Finalization, FinalizationDetails, Title, Close } from './styles';
-import { ShopCartContext } from '@/context/shopCartCOntext';
+import { ShopCartContext } from "@/context/shopCartContext";
 
 
 
@@ -32,7 +31,7 @@ export function MenuContent() {
       window.location.href = checkoutUrl;
     } catch (err) {
       setIsCreatingCheckoutSession(false);
-      alert('Falha ao redirecionar ao checkout!');
+      alert('Failed to redirect to checkout!');
     }
   }
 
@@ -67,7 +66,7 @@ export function MenuContent() {
             shopCartList.map((product) => (
               <Product key={product.id}>
                 <ProductImage>
-                  <Image width={100} height={93} alt="" src={product.imageUrl} />
+                  <Image width={100} height={93} alt="" src={product.imageUrl} priority />
                 </ProductImage>
                 <ProductDetails>
                   <p>{product.name}</p>

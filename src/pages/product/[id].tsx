@@ -5,7 +5,7 @@ import Image from "next/image";
 import Stripe from "stripe";
 import { useContext, useState } from "react";
 import { stripe } from "@/services/stripe";
-import { ShopCartContext } from "@/context/shopCartCOntext";
+import { ShopCartContext } from "@/context/shopCartContext";
 
 interface ProductProps {
   product: {
@@ -42,7 +42,7 @@ export default function Product({ product }: ProductProps) {
     
       <ProductContainer>
         <ImageContainer>
-          <Image src={product.imageUrl} width={520} height={480} alt="" />
+          <Image src={product.imageUrl} width={520} height={480} alt="" priority  />
         </ImageContainer>
         <ProductDetails>
           <h1>{product.name}</h1>
