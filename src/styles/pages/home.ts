@@ -5,6 +5,7 @@ display: 'flex',
 marginLeft: 'auto',
 maxWidth: 'calc(100vw - ((100vw - 1168px) / 2))',
 minHeight: '656px', 
+marginBottom: 100,
 })
 
 export const Product = styled('div', {

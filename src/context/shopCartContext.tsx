@@ -1,18 +1,11 @@
+import { shopCartListProps } from "@/interfaces/shopCart";
 import { actions } from "@/reducer/actions";
 import { shopCartReducer } from "@/reducer/shopCartReducer";
 import { createContext, ReactNode, useReducer } from "react";
 
-interface ShopCartProps {
-  id: string;
-  name: string;
-  imageUrl: string;
-  price: string;
-  defaultPriceId: string;
-}
-
 interface ShopCartContextProps {
-  shopCartList: ShopCartProps[];
-  addItem: (payload: ShopCartProps) => void;
+  shopCartList: shopCartListProps[];
+  addItem: (payload: shopCartListProps) => void;
   removeItem: (id: string) => void;
   checkItemExists: (id: string) => boolean;
 }
@@ -24,13 +17,13 @@ interface ShopCartProviderProps {
 }
 
 const initialState = {
-  shopCartList: [] as ShopCartProps[]
+  shopCartList: [] as shopCartListProps[]
 };
 
 export function ShopCartProvider({ children }: ShopCartProviderProps) {
   const [state, dispatch] = useReducer(shopCartReducer, initialState);
 
-  function addItem(payload: ShopCartProps) {
+  function addItem(payload: shopCartListProps) {
     dispatch({ type: actions.ADD_ITEM, payload });
   }
 

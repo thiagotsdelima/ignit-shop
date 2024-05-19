@@ -8,7 +8,7 @@ import 'keen-slider/keen-slider.min.css';
 import Stripe from "stripe";
 import Link from "next/link";
 import Head from "next/head";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { ShopCartContext } from "@/context/shopCartContext";
 
 
@@ -25,18 +25,18 @@ interface HomeProps {
 }
 
 export default function Home({ products }: HomeProps) {
-  const {addItem, checkItemExists} = useContext(ShopCartContext)
-  
+  const { checkItemExists} = useContext(ShopCartContext);
+  const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
+ 
+ 
+
   const [sliderRef] = useKeenSlider({
     slides: {
       perView:3,
       spacing: 48
     }
   });
-
-  async function handleAddToProductCart(product:ProductsProps) {
-    addItem(product)
-  };
+  
 
   return (
     <>
@@ -45,28 +45,31 @@ export default function Home({ products }: HomeProps) {
       </Head>
     
       <HomeContainer ref={sliderRef} className="keen-slider">
-      {products && products.map(product => (
-          <Link key={product.id} href={`/product/${product.id}`} prefetch={false}>
-            <Product className="keen-slider__slide">
-              <Image src={product.imageUrl} width={520} height={480} alt="" priority  />
-              <footer>
-                <div>
-                  <strong>{product.name}</strong>
-                  <span>{product.price}</span>
-                </div>
-                <BagButton 
-                  color={"green"}
-                  onClick={(e) => handleAddToProductCart(product)}
-                  disabled={checkItemExists(product.id)}
-                />
-              </footer>
-            </Product>
-          </Link>
-        ))}
+      {products && products.map(product => {
+          const itemInCart = checkItemExists(product.id);
+          return (
+            <Link key={product.id} href={`/product/${product.id}`} prefetch={false}>
+              <Product className="keen-slider__slide">
+                <Image src={product.imageUrl} width={520} height={480} alt="" priority  />
+                <footer>
+                  <div>
+                    <strong>{product.name}</strong>
+                    <span>{product.price}</span>
+                  </div>
+                  <BagButton 
+                    color={"green"}
+                    disabled={itemInCart || isCreatingCheckout}
+                  /> 
+                </footer>
+              </Product>
+            </Link>
+          );
+        })}
       </HomeContainer>
     </>
   );
 }
+
 
 export const getStaticProps: GetStaticProps<HomeProps> = async () => {
   const response = await stripe.products.list({
